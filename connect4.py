@@ -4,20 +4,19 @@ import sys
 import math
 
 # Constants
-NUM_ROWS = 6
-NUM_COLS = 7
-WINNING_COUNT = 4
-size_of_square = 100
-SCREEN_HEIGHT = (NUM_ROWS + 1) * size_of_square
-SCREEN_WIDTH = NUM_COLS * size_of_square
-SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
+NUM_ROWS, NUM_COLS, WINNING_COUNT = 6, 7, 4
+SQUARE_SIZE = 100
+SCREEN_WIDTH, SCREEN_HEIGHT = NUM_COLS * SQUARE_SIZE, (NUM_ROWS + 1) * SQUARE_SIZE
+
+# Colors
+BLUE, BLACK, RED, YELLOW, WHITE = (0, 0, 255), (0, 0, 0), (255, 0, 0), (255, 255, 0), (255, 255, 255)
 
 # Initialize pygame
 pygame.init()
-font = pygame.font.SysFont("None", 75)
+font = pygame.font.SysFont(None, 75)
 
 
-def new_game():
+def create_board():
     return np.zeros((NUM_ROWS, NUM_COLS), dtype=int)
 
 
@@ -29,88 +28,75 @@ def drop_piece(board, col, player):
     for row in range(NUM_ROWS - 1, -1, -1):
         if board[row][col] == 0:
             board[row][col] = player
-            break
-    return board
+            return row
 
 
-def game_over(board, player):
-    # Check horizontal, vertical, diagonal, and anti-diagonal wins
-    for row in range(NUM_ROWS):
-        for col in range(NUM_COLS - 3):
-            if np.all(board[row, col:col + 4] == player):
-                return True
-    for col in range(NUM_COLS):
-        for row in range(NUM_ROWS - 3):
-            if np.all(board[row:row + 4, col] == player):
-                return True
-    for row in range(NUM_ROWS - 3):
-        for col in range(NUM_COLS - 3):
-            if all(board[row + i, col + i] == player for i in range(WINNING_COUNT)):
-                return True
-    for row in range(3, NUM_ROWS):
-        for col in range(NUM_COLS - 3):
-            if all(board[row - i, col + i] == player for i in range(WINNING_COUNT)):
-                return True
+def check_winner(board, row, col, player):
+    directions = [(0, 1), (1, 0), (1, 1), (1, -1)]
+    for dr, dc in directions:
+        count = 1
+        for i in (-1, 1):
+            r, c = row, col
+            while True:
+                r += i * dr
+                c += i * dc
+                if not (0 <= r < NUM_ROWS and 0 <= c < NUM_COLS):
+                    break
+                if board[r, c] != player:
+                    break
+                count += 1
+                if count >= WINNING_COUNT:
+                    return True
     return False
 
 
 def draw_board(screen, board):
-    screen.fill((0, 0, 0))
     for row in range(NUM_ROWS):
         for col in range(NUM_COLS):
-            pygame.draw.rect(screen, (0, 0, 255),(col * size_of_square, row * size_of_square + size_of_square, size_of_square,size_of_square))
-            color = (0, 0, 0)
-            if board[row][col] == 1:
-                color = (255, 0, 0)
-            elif board[row][col] == 2:
-                color = (255, 255, 0)
-            pygame.draw.circle(screen, color,(col * size_of_square + size_of_square / 2,row * size_of_square + size_of_square + size_of_square / 2),size_of_square / 2 - 5)
-    pygame.display.update()
+            pygame.draw.rect(screen, BLUE, (col * SQUARE_SIZE, (row + 1) * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+            color = BLACK if board[row][col] == 0 else (RED if board[row][col] == 1 else YELLOW)
+            pygame.draw.circle(screen, color,(col * SQUARE_SIZE + SQUARE_SIZE // 2, (row + 1) * SQUARE_SIZE + SQUARE_SIZE // 2),SQUARE_SIZE // 2 - 5)
+    pygame.display.flip()
 
 
-def play():
-    screen = pygame.display.set_mode(SCREEN_SIZE)
-    clock = pygame.time.Clock()
-    board = new_game()
-    turn = 1
-    game_running = True
+def main():
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    board = create_board()
+    turn, winner = 1, None
     draw_board(screen, board)
 
-    while game_running:
-        # clock.tick(30)
+    while winner is None:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
             if event.type == pygame.MOUSEMOTION:
-                screen.fill((0, 0, 0), (0, 0, SCREEN_WIDTH, size_of_square))
-                posX = event.pos[0]
-                col = int(math.floor(posX / size_of_square))
-                color = (255, 0, 0) if turn == 1 else (255, 255, 0)
-                pygame.draw.circle(screen, color, (col * size_of_square + size_of_square / 2, size_of_square / 2),size_of_square / 2 - 5)
-                pygame.display.update()
+                screen.fill(BLACK, (0, 0, SCREEN_WIDTH, SQUARE_SIZE))
+                col = event.pos[0] // SQUARE_SIZE
+                x_pos = max(SQUARE_SIZE // 2, min(event.pos[0], SCREEN_WIDTH - SQUARE_SIZE // 2))
+                pygame.draw.circle(screen, RED if turn == 1 else YELLOW, (x_pos, SQUARE_SIZE // 2), SQUARE_SIZE // 2 - 5)
+                pygame.display.flip()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                screen.fill((0, 0, 0), (0, 0, SCREEN_WIDTH, size_of_square))
-                posX = event.pos[0]
-                col = int(math.floor(posX / size_of_square))
-
+                col = event.pos[0] // SQUARE_SIZE
                 if is_valid_move(board, col):
-                    board = drop_piece(board, col, turn)
+                    row = drop_piece(board, col, turn)
                     draw_board(screen, board)
-
-                    if game_over(board, turn):
-                        text = font.render(f"Player {turn} wins!", True, (255, 255, 255))
-                        screen.blit(text, (40, 10))
-                        pygame.display.update()
-                        pygame.time.wait(3000)
-                        game_running = False
+                    if check_winner(board, row, col, turn):
+                        winner = turn
 
                     turn = 3 - turn
-
+                    pygame.draw.circle(screen, RED if turn == 1 else YELLOW, (event.pos[0], SQUARE_SIZE // 2), SQUARE_SIZE // 2 - 5)
+                    pygame.display.flip()
+    screen.fill(BLACK, (0, 0, SCREEN_WIDTH, SQUARE_SIZE))
+    text = font.render(f"Player {winner} wins!", True, WHITE)
+    screen.blit(text, (40, 10))
+    pygame.display.flip()
+    pygame.time.wait(3000)
     pygame.quit()
+    sys.exit()
 
 
 if __name__ == "__main__":
-    play()
+    main()
