@@ -1,9 +1,14 @@
 import numpy as np
-
+import pygame
+import sys
 #Constants
 NUM_ROWS = 6
 NUM_COLS = 7
 WINNING_COUNT = 4
+size_of_square = 100
+SCREEN_HEIGHT = (NUM_ROWS+1) * size_of_square
+SCREEN_WIDTH = NUM_COLS * size_of_square
+SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 def game_over(board, player):
     # Check for horizontal win
     for row in range(NUM_ROWS):
@@ -41,36 +46,52 @@ def drop_piece(board, col, player):
             board[row][col] = player
             break
     return board
+def draw_board(screen, board):
+    for row in range(NUM_ROWS):
+        for col in range(NUM_COLS):
+            pygame.draw.rect(screen, (0, 0, 255), (col * size_of_square, row * size_of_square + size_of_square, size_of_square, size_of_square))
+            pygame.draw.circle(screen, (0, 0, 0), (col * size_of_square + size_of_square // 2, row * size_of_square + size_of_square + size_of_square // 2), size_of_square // 2 - 5)
+            if board[row][col] == 1:
+                pygame.draw.circle(screen, (255, 0, 0), (col * size_of_square + size_of_square // 2, row * size_of_square + size_of_square + size_of_square // 2), size_of_square // 2 - 5)
+            elif board[row][col] == 2:
+                pygame.draw.circle(screen, (255, 255, 0), (col * size_of_square + size_of_square // 2, row * size_of_square + size_of_square + size_of_square // 2), size_of_square // 2 - 5)
+    pygame.display.update()
 
 def play():
+    pygame.init()
+    screen = pygame.display.set_mode(SCREEN_SIZE)
     board = new_game()
     turn = 1
+    draw_board(screen, board)
     end_game = False
     while not end_game:
-        print(board)
-        if turn == 1:
-            col = int(input("Player 1, enter a column: "))
-            if is_valid_move(board, col):
-                board = drop_piece(board, col, 1)
-                if game_over(board, 1):
-                    print(board)
-                    print("Player 1 wins!")
-                    end_game = True
-
-                turn = 2
-            else:
-                print("Invalid move, try again.")
-        else :
-            col = int(input("Player 2, enter a column: "))
-            if is_valid_move(board, col):
-                board = drop_piece(board, col, 2)
-                if game_over(board, 2):
-                    print(board)
-                    print("Player 2 wins!")
-                    end_game = True
-                turn = 1
-            else:
-                print("Invalid move, try again.")
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+        # print(board)
+        # if turn == 1:
+        #     col = int(input("Player 1, enter a column: "))
+        #     if is_valid_move(board, col):
+        #         board = drop_piece(board, col, 1)
+        #         if game_over(board, 1):
+        #             print(board)
+        #             print("Player 1 wins!")
+        #             end_game = True
+        #
+        #         turn = 2
+        #     else:
+        #         print("Invalid move, try again.")
+        # else :
+        #     col = int(input("Player 2, enter a column: "))
+        #     if is_valid_move(board, col):
+        #         board = drop_piece(board, col, 2)
+        #         if game_over(board, 2):
+        #             print(board)
+        #             print("Player 2 wins!")
+        #             end_game = True
+        #         turn = 1
+        #     else:
+        #         print("Invalid move, try again.")
 
 def main():
     play()
