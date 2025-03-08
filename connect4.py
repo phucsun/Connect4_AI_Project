@@ -85,9 +85,9 @@ def main():
                     draw_board(screen, board)
                     if check_winner(board, row, col, turn):
                         winner = turn
-
+                    x_pos = max(SQUARE_SIZE // 2, min(event.pos[0], SCREEN_WIDTH - SQUARE_SIZE // 2))
                     turn = 3 - turn
-                    pygame.draw.circle(screen, RED if turn == 1 else YELLOW, (event.pos[0], SQUARE_SIZE // 2), SQUARE_SIZE // 2 - 5)
+                    pygame.draw.circle(screen, RED if turn == 1 else YELLOW, (x_pos, SQUARE_SIZE // 2), SQUARE_SIZE // 2 - 5)
                     pygame.display.flip()
     screen.fill(BLACK, (0, 0, SCREEN_WIDTH, SQUARE_SIZE))
     text = font.render(f"Player {winner} wins!", True, WHITE)
