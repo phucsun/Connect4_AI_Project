@@ -207,7 +207,8 @@ def main():
                     pygame.draw.circle(screen, RED, (x_pos, SQUARE_SIZE // 2), SQUARE_SIZE // 2 - 5)
                     pygame.display.flip()
     screen.fill(BLACK, (0, 0, SCREEN_WIDTH, SQUARE_SIZE))
-    text = font.render(f"Player {winner} wins!", True, WHITE)
+    mess = "Player wins!" if winner == 1 else "AI wins!"
+    text = font.render(mess, True, WHITE)
     screen.blit(text, (40, 10))
     pygame.display.flip()
     pygame.time.wait(3000)
