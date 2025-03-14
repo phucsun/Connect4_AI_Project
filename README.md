@@ -1,4 +1,4 @@
-### Connect 4 AI
+# Connect 4 AI
 
 ## Introduction
 
@@ -6,49 +6,49 @@ This is a project to develop an AI for playing Connect 4 using the Minimax algor
 
 ## Features
 
-🎮 Play Connect 4 with an intuitive interface using Pygame.
+### 🎮 Play Connect 4 with an intuitive interface using Pygame.
 
-🧠 AI utilizes the Minimax algorithm with Alpha-Beta pruning for performance optimization.
+### 🧠 AI utilizes the Minimax algorithm with Alpha-Beta pruning for performance optimization.
 
-🎭 Game modes:
+### 🎭 Game modes:
 
-👤 Player vs AI
+### 👤 Player vs AI
 
-🤖 AI vs AI
+### 🤖 AI vs AI
 
-👥 Player vs Player
+### 👥 Player vs Player
 
-⚙️ Adjustable AI search depth to modify difficulty level.
+### ⚙️ Adjustable AI search depth to modify difficulty level.
 
 ## Installation
 
-# Requirements
+## Requirements
 
-🐍 Python 3.8 or later
+### 🐍 Python 3.8 or later
 
-📦 Required libraries:
+### 📦 Required libraries:
 
-pip install pygame numpy
+### pip install pygame numpy
 
-Run the game
+### Run the game
 
-Clone the repository and run the following command:
+### Clone the repository and run the following command:
 
-python connect4.py
+### python connect4.py
 
-How It Works
+## How It Works
 
-🔍 The game uses the Minimax algorithm to evaluate the best move.
+### 🔍 The game uses the Minimax algorithm to evaluate the best move.
 
-✂️ Alpha-Beta pruning reduces the number of states to be explored.
+### ✂️ Alpha-Beta pruning reduces the number of states to be explored.
 
-📊 A heuristic scoring system is used to evaluate board states.
+### 📊 A heuristic scoring system is used to evaluate board states.
 
 ## Future Improvements
 
-🚀 Enhance the board evaluation algorithm for a stronger AI.
+### 🚀 Enhance the board evaluation algorithm for a stronger AI.
 
-🌐 Support network connectivity for multiplayer matches between computers.
+### 🌐 Support network connectivity for multiplayer matches between computers.
 
 🎨 Improve the user interface with better graphics and animations.
 
